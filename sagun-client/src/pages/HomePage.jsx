@@ -1,19 +1,25 @@
 import Button from '../components/Button';
+import logo from '../assets/K.png';
+import hero from '../assets/hero.gif';
+import card1 from "../assets/card1.jpg";
+import card2 from "../assets/card2.jpg";
+import card3 from "../assets/card3.jpg";
+
 
 const HomePage = () => {
     return (
         <div className='flex w-full flex-col gap-6'>
-            <section className='border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8'>
+            <section className='border-y-2 border-pink-200 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8'>
                 <div className='grid gap-8 lg:grid-cols-2 lg:items-center'>
                     <div>
                         <p className='mb-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500'>
-                            Hero Section
+                            PERSONAL BLOG
                         </p>
                         <h1 className='max-w-xl text-3xl font-bold leading-tight text-zinc-900 sm:text-4xl'>
-                            Welcome to Wireframe Studio Layout
+                            Stories, Study Notes, and Creative Projects by Kaia
                         </h1>
                         <p className='mt-4 max-w-lg text-sm leading-7 text-zinc-600 sm:text-base'>
-                            Discover the art of wireframing with a simple layout system for hero content, key numbers, and feature cards.
+                            I write about student life, web development practice, and lessons from building projects. This blog is my space to share honest experiences, useful resources, and progress as I grow.
                         </p>
                         <div className='mt-6'>
                             <Button to="/about" variant="primary">
@@ -22,16 +28,12 @@ const HomePage = () => {
                         </div>
                     </div>
 
-                    <div className='rounded-3xl border-2 border-dashed border-zinc-300 bg-zinc-100 p-6'>
-                        <div className='flex min-h-65 items-center justify-center rounded-[1.25rem] bg-zinc-200'>
-                            <div className='h-20 w-20 rounder-full border-2 border-zinc-300 bg-zinc-100'></div>
-                        </div>
-                    </div>
+                    <div className="relative flex min-h-65 items-center justify-center rounded-[1.25rem] bg-pink-50 p-6"> <img src={hero} alt="Hero animation" className="h-80 w-auto object-contain" /> <img src={logo} alt="Kaia logo" className="absolute bottom-4 right-35 h-28 w-40 rounded-full border-2 border-pink-200 bg-white p-1 object-contain shadow-sm" /> </div>
                 </div>
             </section>
 
-            <section className='border-y border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8'>
-                <div className='mt-6'>
+            <section className='border-y border-pink-200 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8'>
+                <div className='mb-6'>
                     <p className='text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500'>
                         KPI Section
                     </p>
@@ -40,76 +42,72 @@ const HomePage = () => {
                     </h2>
                 </div>
 
-                <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-                    <div className='rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5'>
-                        <p className='text-2xl font-bold text-zinc-900'>
-                            12
-                        </p>
+                <div className='mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+                    <div className='rounded-3xl border-2 border-pink-200 bg-pink-50 p-5'>
+                        <p className='text-2xl font-bold text-zinc-900'>24</p>
                         <p className='mt-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500'>
-                            Projects
+                            Posts Published
                         </p>
                     </div>
-                    <div className='rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5'>
-                        <p className='text-2xl font-bold text-zinc-900'>24 </p>
+                    <div className='rounded-3xl border-2 border-pink-200 bg-pink-50 p-5'>
+                        <p className='text-2xl font-bold text-zinc-900'>04</p>
                         <p className='mt-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500'>
-                            Sections
+                            Categories
                         </p>
                     </div>
-                    <div className='rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5'>
-                        <p className='text-2xl font-bold text-zinc-900'>24 </p>
+                    <div className='rounded-3xl border-2 border-pink-200 bg-pink-50 p-5'>
+                        <p className='text-2xl font-bold text-zinc-900'>06 min</p>
                         <p className='mt-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500'>
-                            Screens
+                            Average Read Time
                         </p>
                     </div>
-                    <div className='rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5'>
-                        <p className='text-2xl font-bold text-zinc-900'>24 </p>
+                    <div className='rounded-3xl border-2 border-pink-200 bg-pink-50 p-5'>
+                        <p className='text-2xl font-bold text-zinc-900'>320</p>
                         <p className='mt-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500'>
-                            Layouts
+                            Monthly Readers
                         </p>
                     </div>
                 </div>
             </section>
 
-            <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+            <section className="border-y-2 border-pink-200 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
                 <div className="mb-6">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
-                    Feature Cards
+                        Feature Cards
                     </p>
-                    <h2 className="mt-2 text-2xl font-semibold text-zinc-900">Simple wireframe cards</h2> 
+                    <h2 className="mt-2 text-2xl font-semibold text-zinc-900">Latest Articles</h2> 
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-3"> 
-                    <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-4">
-                        <div className="flex aspect-4/3 items-center justify-center rounded-[1.25rem] bg-zinc-200">
-                            <div className="h-12 w-12 border-2 border-zinc-300 bg-zinc-100" />
-                        </div>
-                        <h3 className="mt-4 text-lg font-semibold text-zinc-900">Feature Card One</h3>
+                    <article className="rounded-3xl border-2 border-pink-200 bg-pink-100 p-4">
+                        <div className="overflow-hidden rounded-[1.25rem]"> <img src={card1} alt="Midterm planning notes" className="aspect-4/3 w-full object-cover" /> </div>
+                        <h3 className="mt-4 text-lg font-semibold text-zinc-900">Surviving Midterms Without Burning Out</h3>
                         <p className="mt-3 text-sm leading-6 text-zinc-600">
-                            A clean placeholder for title, short text, and action.
+                            The simple weekly routine I used to manage deadlines, sleep better, and still make time for personal projects.
                         </p>
                         <Button className="mt-4" variant="primary">
                             View More
                         </Button>
                     </article>
-                    <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-4">
-                        <div className="flex aspect-4/3 items-center justify-center rounded-[1.25rem] bg-zinc-200">
-                            <div className="h-12 w-12 border-2 border-zinc-300 bg-zinc-100" />
+                    <article className="rounded-3xl border-2 border-pink-200 bg-pink-100 p-4">
+                        <div className="overflow-hidden rounded-[1.25rem]"> 
+                            <img src={card2} alt="Capstone project" className="aspect-4/3 w-full object-cover" /> 
                         </div>
-                        <h3 className="mt-4 text-lg font-semibold text-zinc-900">Feature Card Two</h3>
+                        <h3 className="mt-4 text-lg font-semibold text-zinc-900">Lessons From My First Capstone Project</h3>
                         <p className="mt-3 text-sm leading-6 text-zinc-600">
-                            Balanced spacing keeps the card layout easy to scan.
+                            What went wrong, what worked, and the teamwork habits I would repeat in every future collaboration.
                         </p>
                         <Button className="mt-4" variant="primary">
                             View More
                         </Button>
                     </article>
-                    <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-4">
-                        <div className="flex aspect-4/3 items-center justify-center rounded-[1.25rem] bg-zinc-200">
-                            <div className="h-12 w-12 border-2 border-zinc-300 bg-zinc-100" />
+                    <article className="rounded-3xl border-2 border-pink-200 bg-pink-100 p-4">
+                        <div className="overflow-hidden rounded-[1.25rem]"> 
+                            <img src={card3} alt="Reset day plan" className="aspect-4/3 w-full object-cover" /> 
                         </div>
-                        <h3 className="mt-4 text-lg font-semibold text-zinc-900">Feature Card Three</h3>
+                        <h3 className="mt-4 text-lg font-semibold text-zinc-900">How I Reset After a Tough Week</h3>
                         <p className="mt-3 text-sm leading-6 text-zinc-600">
-                            Repeated blocks give the page a consistent wireframe rhythm.
+                            My step-by-step reset day plan helps me regain focus when school and life feel overwhelming, through simple routines like clearing my space and giving myself time to rest.
                         </p>
                         <Button className="mt-4" variant="primary">
                             View More

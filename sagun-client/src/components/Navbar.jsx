@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import logo from '../assets/K.png';
 
 const links = [
     { label: 'Home', to: '/' },
@@ -10,17 +11,17 @@ const navLinkClassName = ({ isActive }) =>
     [
         'rounded-full border-2 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] transition',
         isActive
-            ? 'border-zinc-900 bg-zinc-900 text-zinc-50'
-            : 'border-transparent text-zinc-500 hover:border-zinc-900 hover:bg-zinc-50 hover:text-zinc-900',
+            ? 'border-pink-400 bg-pink-400 text-pink-50'
+            : 'border-transparent text-zinc-400 hover:border-pink-400 hover:bg-pink-50 hover:text-pink-400',
     ].join(' ');
 
 const NavBar = () => {
     return (
-        <header className="fixed inset-x-0 top-0 z-50 border-b-2 border-zinc-900 bg-zinc-100/95 backdrop-blur">
-            <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <header className="fixed inset-x-0 top-0 z-50 border-b-2 border-pink-200 bg-zinc-100/95 backdrop-blur">
+            <div className="flex w-full items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                 <NavLink to="/" className="flex items-center gap-3">
                     <div className="space-y-0.5">
-                        <p className="text-xl font-bold text-zinc-900">LOGO HERE</p>
+                        <img src={logo} alt="Logo" className="h-16 w-auto object-contain" />
                     </div>
                 </NavLink>
 
