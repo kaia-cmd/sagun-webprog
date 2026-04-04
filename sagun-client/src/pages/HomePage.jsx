@@ -5,6 +5,9 @@ import card1 from "../assets/card1.jpg";
 import card2 from "../assets/card2.jpg";
 import card3 from "../assets/card3.jpg";
 
+import ArticleList from "../components/ArticleList";
+import articles from "../assets/article-content.js";
+
 
 const HomePage = () => {
     return (
@@ -78,42 +81,7 @@ const HomePage = () => {
                     <h2 className="mt-2 text-2xl font-semibold text-zinc-900">Latest Articles</h2> 
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-3"> 
-                    <article className="rounded-3xl border-2 border-pink-200 bg-pink-100 p-4">
-                        <div className="overflow-hidden rounded-[1.25rem]"> <img src={card1} alt="Midterm planning notes" className="aspect-4/3 w-full object-cover" /> </div>
-                        <h3 className="mt-4 text-lg font-semibold text-zinc-900">Surviving Midterms Without Burning Out</h3>
-                        <p className="mt-3 text-sm leading-6 text-zinc-600">
-                            The simple weekly routine I used to manage deadlines, sleep better, and still make time for personal projects.
-                        </p>
-                        <Button className="mt-4" variant="primary">
-                            View More
-                        </Button>
-                    </article>
-                    <article className="rounded-3xl border-2 border-pink-200 bg-pink-100 p-4">
-                        <div className="overflow-hidden rounded-[1.25rem]"> 
-                            <img src={card2} alt="Capstone project" className="aspect-4/3 w-full object-cover" /> 
-                        </div>
-                        <h3 className="mt-4 text-lg font-semibold text-zinc-900">Lessons From My First Capstone Project</h3>
-                        <p className="mt-3 text-sm leading-6 text-zinc-600">
-                            What went wrong, what worked, and the teamwork habits I would repeat in every future collaboration.
-                        </p>
-                        <Button className="mt-4" variant="primary">
-                            View More
-                        </Button>
-                    </article>
-                    <article className="rounded-3xl border-2 border-pink-200 bg-pink-100 p-4">
-                        <div className="overflow-hidden rounded-[1.25rem]"> 
-                            <img src={card3} alt="Reset day plan" className="aspect-4/3 w-full object-cover" /> 
-                        </div>
-                        <h3 className="mt-4 text-lg font-semibold text-zinc-900">How I Reset After a Tough Week</h3>
-                        <p className="mt-3 text-sm leading-6 text-zinc-600">
-                            My step-by-step reset day plan helps me regain focus when school and life feel overwhelming, through simple routines like clearing my space and giving myself time to rest.
-                        </p>
-                        <Button className="mt-4" variant="primary">
-                            View More
-                        </Button>
-                    </article>
-                </div>
+                <div className="grid gap-4"> <ArticleList articles={articles.slice(0, 4)} /> </div>
             </section>
         </div>
     )
