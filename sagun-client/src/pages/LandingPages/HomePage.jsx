@@ -1,12 +1,9 @@
-import Button from '../components/Button';
-import logo from '../assets/K.png';
-import hero from '../assets/hero.gif';
-import card1 from "../assets/card1.jpg";
-import card2 from "../assets/card2.jpg";
-import card3 from "../assets/card3.jpg";
+import Button from '../../components/Button.jsx';
+import logo from '../../assets/K.png';
+import hero from '../../assets/hero.gif';
 
-import ArticleList from "../components/ArticleList";
-import articles from "../assets/article-content.js";
+import ArticleList from "../../components/ArticleList.jsx";
+import articles from "../../assets/article-content.js";
 
 
 const HomePage = () => {
