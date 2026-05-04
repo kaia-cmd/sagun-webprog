@@ -3,7 +3,7 @@ import logo from '../../assets/K.png';
 import hero from '../../assets/hero.gif';
 
 import ArticleList from "../../components/ArticleList.jsx";
-import articles from "../../assets/article-content.js";
+import articles from "../../data/article-content.js";
 
 
 const HomePage = () => {

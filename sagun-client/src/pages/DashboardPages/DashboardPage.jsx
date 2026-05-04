@@ -37,6 +37,16 @@ const dashboardColumns = [
     },
 ];
 
+const pinkTheme = {
+    sectionBorder: '#fecdd3',
+    sectionBg: '#fafafa',
+    cardBg: '#fdf2f8',
+    cardBorder: '#fecdd3',
+    title: '#18181b',
+    accent: '#be185d',
+    dataGridHeaderBg: '#fce7f3',
+};
+
 const dashboardRows = [
     { id: 1, lastName: 'Snow', firstName: 'John', age: 14 },
     { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 31 },
@@ -77,7 +87,7 @@ function DashboardPage() {
 
     return (
         <div className="flex w-full flex-col gap-6">
-            <section className="border-y-2 border-pink-200 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+            <section className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8" style={{ border: `2px solid ${pinkTheme.sectionBorder}`, backgroundColor: pinkTheme.sectionBg }}>
                 <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
                     <div>
                         <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
@@ -100,7 +110,7 @@ function DashboardPage() {
                 </div>
             </section>
 
-            <section className="border-y border-pink-200 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+            <section className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8" style={{ border: `2px solid ${pinkTheme.sectionBorder}`, backgroundColor: pinkTheme.sectionBg }}>
                 <div className="mb-6">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
                         Quick Summary
@@ -109,22 +119,22 @@ function DashboardPage() {
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    <article className="rounded-3xl border-2 border-pink-200 bg-pink-50 p-5">
+                    <article className="rounded-3xl p-5" style={{ border: `2px solid ${pinkTheme.cardBorder}`, backgroundColor: pinkTheme.cardBg }}>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">Total Users</p>
                         <p className="mt-2 text-3xl font-bold text-zinc-900">{dashboardRows.length}</p>
                         <p className="mt-2 text-sm text-zinc-600">Based on the users shown in the table</p>
                     </article>
-                    <article className="rounded-3xl border-2 border-pink-200 bg-pink-50 p-5">
+                    <article className="rounded-3xl p-5" style={{ border: `2px solid ${pinkTheme.cardBorder}`, backgroundColor: pinkTheme.cardBg }}>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">Average Age</p>
                         <p className="mt-2 text-3xl font-bold text-zinc-900">{averageAge}</p>
                         <p className="mt-2 text-sm text-zinc-600">Calculated from the current sample users</p>
                     </article>
-                    <article className="rounded-3xl border-2 border-pink-200 bg-pink-50 p-5">
+                    <article className="rounded-3xl p-5" style={{ border: `2px solid ${pinkTheme.cardBorder}`, backgroundColor: pinkTheme.cardBg }}>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">Gauge Value</p>
                         <p className="mt-2 text-3xl font-bold text-zinc-900">{dashboardGaugePrimary}</p>
                         <p className="mt-2 text-sm text-zinc-600">Current score for the first gauge</p>
                     </article>
-                    <article className="rounded-3xl border-2 border-pink-200 bg-pink-50 p-5">
+                    <article className="rounded-3xl p-5" style={{ border: `2px solid ${pinkTheme.cardBorder}`, backgroundColor: pinkTheme.cardBg }}>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">Gauge Range</p>
                         <p className="mt-2 text-3xl font-bold text-zinc-900">{dashboardGaugeMin} - {dashboardGaugeMax}</p>
                         <p className="mt-2 text-sm text-zinc-600">Configured minimum and maximum range</p>
@@ -132,14 +142,14 @@ function DashboardPage() {
                 </div>
             </section>
 
-            <section className="border-y-2 border-pink-200 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+            <section className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8" style={{ border: `2px solid ${pinkTheme.sectionBorder}`, backgroundColor: pinkTheme.sectionBg }}>
                 <div className="mb-6">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">Data Visuals</p>
                     <h2 className="mt-2 text-2xl font-semibold text-zinc-900">Charts and gauges</h2>
                 </div>
 
                 <div className="grid gap-4 lg:grid-cols-3">
-                    <div className="rounded-3xl border-2 border-pink-200 bg-pink-50 p-4">
+                    <div className="rounded-3xl p-4" style={{ border: `2px solid ${pinkTheme.cardBorder}`, backgroundColor: pinkTheme.cardBg }}>
                         <Typography variant="h6" sx={{ fontWeight: 700, color: '#18181b', mb: 1 }}>
                             Gauges
                         </Typography>
@@ -149,7 +159,7 @@ function DashboardPage() {
                         </Stack>
                     </div>
 
-                    <div className="rounded-3xl border-2 border-pink-200 bg-pink-50 p-4 lg:col-span-2">
+                    <div className="rounded-3xl p-4 lg:col-span-2" style={{ border: `2px solid ${pinkTheme.cardBorder}`, backgroundColor: pinkTheme.cardBg }}>
                         <Typography variant="h6" sx={{ fontWeight: 700, color: '#18181b', mb: 1 }}>
                             Quarterly comparison
                         </Typography>
@@ -160,7 +170,7 @@ function DashboardPage() {
                         />
                     </div>
 
-                    <div className="rounded-3xl border-2 border-pink-200 bg-pink-50 p-4 lg:col-span-3">
+                    <div className="rounded-3xl p-4 lg:col-span-3" style={{ border: `2px solid ${pinkTheme.cardBorder}`, backgroundColor: pinkTheme.cardBg }}>
                         <Typography variant="h6" sx={{ fontWeight: 700, color: '#18181b', mb: 1 }}>
                             Category distribution
                         </Typography>
@@ -185,7 +195,7 @@ function DashboardPage() {
                     <h2 className="mt-2 text-2xl font-semibold text-zinc-900">User table</h2>
                 </div>
 
-                <div className="rounded-3xl border-2 border-pink-200 bg-pink-50 p-3 sm:p-4">
+                <div className="rounded-3xl p-3 sm:p-4" style={{ border: `2px solid ${pinkTheme.cardBorder}`, backgroundColor: pinkTheme.cardBg }}>
                     <Box sx={{ height: 420, width: '100%' }}>
                         <DataGrid
                             rows={dashboardRows}
@@ -203,9 +213,9 @@ function DashboardPage() {
                             disableRowSelectionOnClick
                             sx={{
                                 border: 0,
-                                bgcolor: '#fdf2f8',
+                                bgcolor: pinkTheme.cardBg,
                                 '& .MuiDataGrid-columnHeaders': {
-                                    bgcolor: '#fce7f3',
+                                    bgcolor: pinkTheme.dataGridHeaderBg,
                                 },
                             }}
                         />
