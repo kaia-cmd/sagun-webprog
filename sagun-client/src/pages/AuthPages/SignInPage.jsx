@@ -1,11 +1,43 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
+import { useState } from 'react';
+import { loginUser } from '../../../services/UserService';
+
+// helper to store auth
+const saveAuth = (token, type, firstName) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('userType', type);
+    localStorage.setItem('firstName', firstName);
+};
 
 const inputClasses = 'mt-2  w-full rounded-xl border border-zinc-300 bg-zinc-100 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:bg-zinc-50';
 
 const actionButtonClassName = 'w-full rounded-xl py-3 text-[11px] tracking-[0.2em]';
 
 const SignInPage = () => {
+    const navigate = useNavigate();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        try {
+            const res = await loginUser({ email, password });
+            const { token, type, firstName } = res.data;
+            saveAuth(token, type, firstName);
+            // Route admin and editor to dashboard, viewers to home
+            if (type === 'admin' || type === 'editor') {
+                navigate('/dashboard');
+            } else {
+                navigate('/');
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || 'Login failed');
+        }
+    };
+
     return (
         <>
             <h1 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">Sign In</h1>
@@ -13,7 +45,7 @@ const SignInPage = () => {
                 Sign in to continue reading your saved stories and pick up where you left off.
             </p>
 
-            <form className="mt-8 space-y-5">
+            <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
                     <div>
                     <label htmlFor="signin-email" className="text-sm font-medium text-zinc-700">
                         Email Address
@@ -24,6 +56,8 @@ const SignInPage = () => {
                         placeholder="example@domain.com"
                         autoComplete="email"
                         className={inputClasses}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                 </div>
 
@@ -37,6 +71,8 @@ const SignInPage = () => {
                         placeholder="Enter your password"
                         autoComplete="current-password"
                         className={inputClasses}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                     />
                     <p className="mt-3 text-xs leading-5 text-zinc-500">
                     It must be a combination of minimum 8 letters. numbers, and symbols.
@@ -53,6 +89,7 @@ const SignInPage = () => {
                     </Button>
                 </div> 
 
+                {error && <p className="text-sm text-red-600">{error}</p>}
                 <Button type="submit" variant="primary" className={actionButtonClassName}>
                     Log In
                 </Button>

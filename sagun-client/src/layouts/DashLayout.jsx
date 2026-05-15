@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { styled, useTheme, alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -25,6 +25,7 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import Button from "@mui/material/Button";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import ArticleIcon from "@mui/icons-material/Article";
+import FolderIcon from "@mui/icons-material/Folder";
 
 const drawerWidth = 240;
 const dashboardNavItems = [
@@ -39,6 +40,12 @@ const dashboardNavItems = [
         title: "Reports",
         to: "/dashboard/reports",
         icon: ArticleIcon,
+    },
+    {
+        label: "Articles",
+        title: "Articles",
+        to: "/dashboard/articles",
+        icon: FolderIcon,
     },
     {
         label: "Users",
@@ -148,6 +155,24 @@ const Dashlayout = () => {
     const navigate = useNavigate();
     const pageTitle = getPageTitle(location.pathname);
 
+    // Block viewers from accessing dashboard
+    useEffect(() => {
+        const userType = typeof window !== 'undefined' ? localStorage.getItem('userType') : null;
+        if (userType === 'viewer') {
+            navigate('/');
+        }
+    }, [navigate]);
+
+    // Filter nav items based on user type
+    const userType = typeof window !== 'undefined' ? localStorage.getItem('userType') : null;
+    const visibleNavItems = dashboardNavItems.filter(item => {
+        // Hide Users page from editors
+        if (item.to === '/dashboard/users' && userType === 'editor') {
+            return false;
+        }
+        return true;
+    });
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -205,7 +230,7 @@ const Dashlayout = () => {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {dashboardNavItems.map(({ label, to, icon: Icon }) => (
+                    {visibleNavItems.map(({ label, to, icon: Icon }) => (
                         <ListItem key={label} disablePadding sx={{ display: "block" }}>
                             <ListItemButton
                                 component={Link}

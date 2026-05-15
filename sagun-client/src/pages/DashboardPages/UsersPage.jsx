@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Alert,
   Box,
@@ -17,13 +17,15 @@ import {
   TextField,
   Typography,
   useMediaQuery,
+  CircularProgress,
 } from '@mui/material';
 
 import { useTheme } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { DataGrid } from '@mui/x-data-grid';
-import userseed from '../../Data/users.json?raw';
+import { fetchUsers, createUser, updateUser, deleteUser } from '../../../services/UserService';
 
 const pinkTheme = {
   sectionBorder: '#fecdd3',
@@ -35,7 +37,7 @@ const pinkTheme = {
   dataGridHeaderBg: '#fce7f3',
 };
 
-const roles = ['admin', 'editor', 'viewer'];
+const types = ['admin', 'editor', 'viewer'];
 const genders = ['male', 'female', 'other'];
 
 const blankForm = {
@@ -45,7 +47,7 @@ const blankForm = {
     gender: '',
     contactNumber: '',
     email: '',
-    role: 'editor',
+    type: 'editor',
     username: '',
     password: '',
     address: '',
@@ -55,51 +57,47 @@ const blankForm = {
 const labelize = (value) =>
     value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : '';
 
-const loadUsers = () => {
-    try {
-        return {
-            users: JSON.parse(userseed).map((user, index) => ({
-                id: Number(user.id) || index + 1,
-                firstName: String(user.firstName ?? '').trim(),
-                lastName: String(user.lastName ?? '').trim(),
-                age: String(user.age ?? '').trim(),
-                gender: genders.includes(String(user.gender ?? '').trim().toLowerCase())
-                ? String(user.gender ?? '').trim().toLowerCase()
-                : '',
-                contactNumber: String(user.contactNumber ?? '').trim(),
-                email: String(user.email ?? '').trim().toLowerCase(),
-                role: roles.includes(String(user.role ?? '').trim().toLowerCase())
-                ? String(user.role ?? '').trim().toLowerCase()
-                : 'editor',
-                username: String(user.username ?? '').trim().toLowerCase(),
-                password: String(user.password ?? ''),
-                address: String(user.address ?? '').trim(),
-                isActive: typeof user.isActive === 'boolean' ? user.isActive : true,
-            })),
-            error: '',
-        };
-    } catch {
-        return{ 
-            users: [],
-            error: 'unable to read users from src/assets/users.json.'
-        }
-    }
-};
-
-const seed = loadUsers();
-
 const UsersPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [users, setUsers] = useState(seed.users);
+  const navigate = useNavigate();
+
+  // Restrict access to admins only (client-side guard)
+  useEffect(() => {
+    const userType = typeof window !== 'undefined' ? localStorage.getItem('userType') : null;
+    if (userType !== 'admin') {
+      navigate('/');
+    }
+  }, [navigate]);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [modal, setModal] = useState({ open: false, id: null });
   const [form, setForm] = useState(blankForm);
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterRole, setFilterRole] = useState('');
+  const [filterType, setFilterType] = useState('');
   const [filterGender, setFilterGender] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+
+  useEffect(() => {
+    loadUsersFromAPI();
+  }, []);
+
+  const loadUsersFromAPI = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const response = await fetchUsers();
+      setUsers(response.data.users || []);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load users');
+      console.error('Error loading users:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const resetForm = () => {
     setForm({ ...blankForm });
@@ -107,7 +105,7 @@ const UsersPage = () => {
   };
 
   const openModal = (user) => {
-    setModal({ open: true, id: user?.id ?? null });
+    setModal({ open: true, id: user?._id ?? null });
     setForm(user ? {...blankForm, ...user} : {...blankForm});
     setErrors({});
   };
@@ -140,7 +138,7 @@ const UsersPage = () => {
       { key: 'gender', label: 'Gender' },
       { key: 'contactNumber', label: 'Contact number' },
       { key: 'email', label: 'Email' },
-      { key: 'role', label: 'Role' },
+      { key: 'type', label: 'Type' },
       { key: 'username', label: 'Username' },
       { key: 'password', label: 'Password' },
       { key: 'address', label: 'Address' },
@@ -154,11 +152,11 @@ const UsersPage = () => {
       nextErrors.email = 'Enter a valid email address.';
     }
 
-    if (!nextErrors.email && users.some((user) => user.id !== modal.id && user.email === email)) {
+    if (!nextErrors.email && users.some((user) => user._id !== modal.id && user.email === email)) {
       nextErrors.email = 'Email address already exists.';
     }
 
-    if (!nextErrors.username && users.some((user) => user.id !== modal.id && user.username === username)) {
+    if (!nextErrors.username && users.some((user) => user._id !== modal.id && user.username === username)) {
       nextErrors.username = 'Username already exists.';
     }
 
@@ -182,7 +180,7 @@ const UsersPage = () => {
 
   const clearFilters = () => {
     setSearchQuery('');
-    setFilterRole('');
+    setFilterType('');
     setFilterGender('');
     setFilterStatus('all');
   };
@@ -195,14 +193,14 @@ const UsersPage = () => {
         .some((v) => v.includes(q));
       if (!matches) return false;
     }
-    if (filterRole && u.role !== filterRole) return false;
+    if (filterType && u.type !== filterType) return false;
     if (filterGender && u.gender !== filterGender) return false;
     if (filterStatus === 'active' && !u.isActive) return false;
     if (filterStatus === 'inactive' && u.isActive) return false;
     return true;
   });
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const nextErrors = validate();
 
@@ -218,28 +216,37 @@ const UsersPage = () => {
       gender: form.gender.trim().toLowerCase(),
       contactNumber: form.contactNumber.trim(),
       email: form.email.trim().toLowerCase(),
-      role: form.role.trim().toLowerCase(),
+      type: form.type.trim().toLowerCase(),
       username: form.username.trim().toLowerCase(),
       password: form.password,
       address: form.address.trim(),
       isActive: form.isActive,
     };
 
-    if (modal.id) {
-      setUsers(users.map((user) => (user.id === modal.id ? { ...user, ...nextUser } : user)));
-    } else {
-      setUsers([...users, {
-        id: users.reduce((max, user) => Math.max(max, Number(user.id) || 0), 0) + 1,
-        ...nextUser,
-      }]);
+    try {
+      if (modal.id) {
+        await updateUser(modal.id, nextUser);
+        setUsers(users.map((user) => (user._id === modal.id ? { ...user, ...nextUser } : user)));
+      } else {
+        const response = await createUser(nextUser);
+        setUsers([...users, response.data]);
+      }
+      closeModal();
+    } catch (err) {
+      setErrors({ submit: err.response?.data?.message || 'Failed to save user' });
     }
-    closeModal();
   };
 
-  const toggleStatus = (id) => {
-    setUsers(users.map((user) => 
-      user.id === id ? { ...user, isActive: !user.isActive } : user
-    ));
+  const toggleStatus = async (id) => {
+    try {
+      const user = users.find((u) => u._id === id);
+      await updateUser(id, { isActive: !user.isActive });
+      setUsers(users.map((user) => 
+        user._id === id ? { ...user, isActive: !user.isActive } : user
+      ));
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update user status');
+    }
   };
 
   const fieldProps = (name, label, extra = {}) => ({
@@ -253,8 +260,19 @@ const UsersPage = () => {
     ...extra,
   });
 
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      try {
+        await deleteUser(id);
+        setUsers(users.filter((user) => user._id !== id));
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to delete user');
+      }
+    }
+  };
+
   const columns = [
-    { field: 'id', headerName: 'ID', width: 88 },
+    { field: '_id', headerName: 'ID', width: 88, valueGetter: (value) => value.slice(0, 8) },
     {
       field: 'fullName',
       headerName: 'Full Name',
@@ -273,10 +291,10 @@ const UsersPage = () => {
     { field: 'contactNumber', headerName: 'Contact Number', minWidth: 160 },
     { field: 'email', headerName: 'Email', flex: 1.1, minWidth: 220 },
     {
-      field: 'role',
-      headerName: 'Role',
+      field: 'type',
+      headerName: 'Type',
       minWidth: 120,
-      valueGetter: (value, row) => labelize(row.role),
+      valueGetter: (value, row) => labelize(row.type),
     },
     {
       field: 'status',
@@ -316,7 +334,7 @@ const UsersPage = () => {
           <Button
             size="small"
             variant="contained"
-            onClick={() => toggleStatus(row.id)}
+            onClick={() => toggleStatus(row._id)}
             sx={{
               backgroundColor: row.isActive ? '#ec4899' : '#be185d',
               '&:hover': {
@@ -325,6 +343,19 @@ const UsersPage = () => {
             }}
           >
             {row.isActive ? 'Disable' : 'Activate'}
+          </Button>
+          <Button
+            size="small"
+            variant="contained"
+            onClick={() => handleDelete(row._id)}
+            sx={{
+              backgroundColor: '#dc2626',
+              '&:hover': {
+                backgroundColor: '#b91c1c',
+              },
+            }}
+          >
+            Delete
           </Button>
         </Stack>
       ),
@@ -350,6 +381,7 @@ const UsersPage = () => {
         <Button
           variant="contained"
           onClick={() => openModal()}
+          disabled={loading}
           sx={{
             width: { xs: '100%', sm: 'auto' },
             backgroundColor: pinkTheme.accent,
@@ -359,11 +391,11 @@ const UsersPage = () => {
           Add User
         </Button>
       </Box>
-      {seed.error ? (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {seed.error}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
+          {error}
         </Alert>
-      ) : null}
+      )}
       <Box
         sx={{
           mb: 2,
@@ -383,9 +415,9 @@ const UsersPage = () => {
             InputProps={{ startAdornment: <InputAdornment position="start">🔍</InputAdornment> }}
             sx={{ minWidth: { xs: '100%', sm: 300 } }}
           />
-          <TextField size="small" select label="Role" value={filterRole} onChange={(e) => setFilterRole(e.target.value)} sx={{ minWidth: 140 }}>
-            <MenuItem value="">All roles</MenuItem>
-            {roles.map((r) => <MenuItem key={r} value={r}>{labelize(r)}</MenuItem>)}
+          <TextField size="small" select label="Type" value={filterType} onChange={(e) => setFilterType(e.target.value)} sx={{ minWidth: 140 }}>
+            <MenuItem value="">All types</MenuItem>
+            {types.map((t) => <MenuItem key={t} value={t}>{labelize(t)}</MenuItem>)}
           </TextField>
           <TextField size="small" select label="Gender" value={filterGender} onChange={(e) => setFilterGender(e.target.value)} sx={{ minWidth: 140 }}>
             <MenuItem value="">All genders</MenuItem>
@@ -411,11 +443,16 @@ const UsersPage = () => {
           borderRadius: 3,
         }}
       >
-        {filteredUsers.length ? (
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 400 }}>
+            <CircularProgress />
+          </Box>
+        ) : filteredUsers.length ? (
           <Box sx={{ height: { xs: 460, sm: 520 }, width: '100%', minWidth: 0 }}>
             <DataGrid
               rows={filteredUsers}
               columns={columns}
+              getRowId={(row) => row._id}
               disableRowSelectionOnClick
               pageSizeOptions={[5, 10]}
               initialState={{ pagination: { paginationModel: { pageSize: 5, page: 0 } } }}
@@ -460,6 +497,11 @@ const UsersPage = () => {
           <DialogTitle sx={{ color: pinkTheme.title, fontWeight: 700 }}>{modal.id ? 'Edit User' : 'Add User'}</DialogTitle>
           <DialogContent dividers sx={{ px: { xs: 2, sm: 3 } }}>
             <Stack spacing={2} sx={{ pt: 1 }}>
+              {errors.submit && (
+                <Alert severity="error">
+                  {errors.submit}
+                </Alert>
+              )}
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                 <TextField {...fieldProps('firstName', 'First Name')} />
                 <TextField {...fieldProps('lastName', 'Last Name')} />
@@ -495,10 +537,10 @@ const UsersPage = () => {
                 />
               </Stack>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                <TextField {...fieldProps('role', 'Role', { select: true })}>
-                  {roles.map((role) => (
-                    <MenuItem key={role} value={role}>
-                      {labelize(role)}
+                <TextField {...fieldProps('type', 'Type', { select: true })}>
+                  {types.map((type) => (
+                    <MenuItem key={type} value={type}>
+                      {labelize(type)}
                     </MenuItem>
                   ))}
                 </TextField>
