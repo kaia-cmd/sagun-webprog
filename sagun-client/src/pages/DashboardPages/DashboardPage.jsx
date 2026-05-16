@@ -1,39 +1,63 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { Gauge } from '@mui/x-charts/Gauge';
 import { DataGrid } from '@mui/x-data-grid';
+import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
+import { fetchUsers } from '../../../services/UserService';
 
 const dashboardColumns = [
-    { field: 'id', headerName: 'ID', width: 90 },
     {
-        field: 'firstName',
-        headerName: 'First Name',
-        width: 150,
-        editable: true,
-    },
-    {
-        field: 'lastName',
-        headerName: 'Last Name',
-        width: 150,
-        editable: true,
-    },
-    {
-        field: 'age',
-        headerName: 'Age',
-        width: 150,
-        editable: true,
+        field: '_id',
+        headerName: 'ID',
+        width: 90,
+        valueGetter: (value) => String(value ?? '').slice(0, 8),
     },
     {
         field: 'fullName',
-        headerName: 'Full name',
-        description: 'This column has a value getter and is not sortable',
+        headerName: 'Full Name',
+        flex: 1,
+        minWidth: 170,
+        valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`.trim() || 'Unnamed',
+    },
+    {
+        field: 'username',
+        headerName: 'Username',
+        minWidth: 140,
+    },
+    {
+        field: 'email',
+        headerName: 'Email',
+        flex: 1.1,
+        minWidth: 220,
+    },
+    {
+        field: 'type',
+        headerName: 'Type',
+        minWidth: 120,
+        valueGetter: (value, row) => (row.type ? `${row.type.charAt(0).toUpperCase()}${row.type.slice(1)}` : ''),
+    },
+    {
+        field: 'status',
+        headerName: 'Status',
+        minWidth: 120,
         sortable: false,
-        width: 160,
-        valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
+        renderCell: ({ row }) => (
+            <Chip
+                size="small"
+                label={row.isActive ? 'Active' : 'Inactive'}
+                variant={row.isActive ? 'filled' : 'outlined'}
+                sx={{
+                    color: row.isActive ? '#831843' : '#9f1239',
+                    backgroundColor: row.isActive ? '#fbcfe8' : 'transparent',
+                    borderColor: '#f9a8d4',
+                    fontWeight: 600,
+                }}
+            />
+        ),
     },
 ];
 
@@ -46,18 +70,6 @@ const pinkTheme = {
     accent: '#be185d',
     dataGridHeaderBg: '#fce7f3',
 };
-
-const dashboardRows = [
-    { id: 1, lastName: 'Snow', firstName: 'John', age: 14 },
-    { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 31 },
-    { id: 3, lastName: 'Lannister', firstName: 'Jamie', age: 31 },
-    { id: 4, lastName: 'Stark', firstName: 'Arya', age: 11 },
-    { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-    { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-    { id: 7, lastName: 'Cliffors', firstName: 'Ferrara', age: 44 },
-    { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-    { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-];
 
 const dashboardBarSeries = [
     { data: [35, 44, 24, 34], label: 'series 1' },
@@ -80,10 +92,34 @@ const dashboardGaugeMin = 10;
 const dashboardGaugeMax = 60;
 
 function DashboardPage() {
-    const averageAge = (
-        dashboardRows.reduce((sum, row) => sum + (row.age || 0), 0) /
-        dashboardRows.filter((row) => row.age !== null).length
-    ).toFixed(1);
+    const [dashboardRows, setDashboardRows] = useState([]);
+    const [loadingUsers, setLoadingUsers] = useState(true);
+    const [usersError, setUsersError] = useState('');
+
+    useEffect(() => {
+        const loadDashboardUsers = async () => {
+            try {
+                setLoadingUsers(true);
+                setUsersError('');
+                const response = await fetchUsers();
+                setDashboardRows(response.data.users || []);
+            } catch (error) {
+                setUsersError(error.response?.data?.message || 'Failed to load users');
+                setDashboardRows([]);
+            } finally {
+                setLoadingUsers(false);
+            }
+        };
+
+        loadDashboardUsers();
+    }, []);
+
+    const ageValues = dashboardRows
+        .map((row) => Number(row.age))
+        .filter((value) => Number.isFinite(value));
+    const averageAge = ageValues.length
+        ? (ageValues.reduce((sum, value) => sum + value, 0) / ageValues.length).toFixed(1)
+        : '0.0';
 
     return (
         <div className="flex w-full flex-col gap-6">
@@ -122,7 +158,7 @@ function DashboardPage() {
                     <article className="rounded-3xl p-5" style={{ border: `2px solid ${pinkTheme.cardBorder}`, backgroundColor: pinkTheme.cardBg }}>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">Total Users</p>
                         <p className="mt-2 text-3xl font-bold text-zinc-900">{dashboardRows.length}</p>
-                        <p className="mt-2 text-sm text-zinc-600">Based on the users shown in the table</p>
+                        <p className="mt-2 text-sm text-zinc-600">Based on the users fetched from the API</p>
                     </article>
                     <article className="rounded-3xl p-5" style={{ border: `2px solid ${pinkTheme.cardBorder}`, backgroundColor: pinkTheme.cardBg }}>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">Average Age</p>
@@ -192,14 +228,19 @@ function DashboardPage() {
             <section className="border-y-2 border-pink-200 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
                 <div className="mb-6">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">User Overview</p>
-                    <h2 className="mt-2 text-2xl font-semibold text-zinc-900">User table</h2>
+                    <h2 className="mt-2 text-2xl font-semibold text-zinc-900">Live user table</h2>
                 </div>
 
                 <div className="rounded-3xl p-3 sm:p-4" style={{ border: `2px solid ${pinkTheme.cardBorder}`, backgroundColor: pinkTheme.cardBg }}>
+                    {usersError && (
+                        <p className="mb-3 text-sm text-red-600">{usersError}</p>
+                    )}
                     <Box sx={{ height: 420, width: '100%' }}>
                         <DataGrid
                             rows={dashboardRows}
                             columns={dashboardColumns}
+                            getRowId={(row) => row._id}
+                            loading={loadingUsers}
                             experimentalFeatures={{ newEditingApi: true }}
                             initialState={{
                                 pagination: {
