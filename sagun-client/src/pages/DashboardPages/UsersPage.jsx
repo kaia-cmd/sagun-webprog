@@ -25,7 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { DataGrid } from '@mui/x-data-grid';
-import { fetchUsers, createUser, updateUser, deleteUser } from '../../../services/UserService';
+import { fetchUsers, createUser, updateUser, deleteUser } from '../../services/UserService';
 
 const pinkTheme = {
   sectionBorder: '#fecdd3',

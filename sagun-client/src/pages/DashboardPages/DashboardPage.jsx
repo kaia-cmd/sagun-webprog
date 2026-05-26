@@ -6,8 +6,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import { Typography } from '@mui/material';
-import { fetchUsers } from '../../../services/UserService';
+import { Alert, Button, Typography } from '@mui/material';
+import { fetchUsers } from '../../services/UserService';
 
 const dashboardColumns = [
     {
@@ -90,11 +90,25 @@ const dashboardGaugePrimary = 50;
 const dashboardGaugeSecondary = 50;
 const dashboardGaugeMin = 10;
 const dashboardGaugeMax = 60;
+const defaultMapCenter = { lat: 14.5995, lng: 120.9842 };
+
+const buildMapEmbedUrl = (lat, lng) => {
+    const boxSize = 0.05;
+    const left = lng - boxSize;
+    const right = lng + boxSize;
+    const top = lat + boxSize;
+    const bottom = lat - boxSize;
+
+    return `https://www.openstreetmap.org/export/embed.html?bbox=${left}%2C${bottom}%2C${right}%2C${top}&layer=mapnik&marker=${lat}%2C${lng}`;
+};
 
 function DashboardPage() {
     const [dashboardRows, setDashboardRows] = useState([]);
     const [loadingUsers, setLoadingUsers] = useState(true);
     const [usersError, setUsersError] = useState('');
+    const [mapCenter, setMapCenter] = useState(defaultMapCenter);
+    const [mapError, setMapError] = useState('');
+    const [locating, setLocating] = useState(false);
 
     useEffect(() => {
         const loadDashboardUsers = async () => {
@@ -112,6 +126,43 @@ function DashboardPage() {
         };
 
         loadDashboardUsers();
+    }, []);
+
+    const requestCurrentLocation = () => {
+        if (!navigator.geolocation) {
+            setMapError('Geolocation is not supported by this browser.');
+            return;
+        }
+
+        setLocating(true);
+        setMapError('');
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setMapCenter({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                });
+                setLocating(false);
+            },
+            (error) => {
+                setLocating(false);
+                if (error.code === error.PERMISSION_DENIED) {
+                    setMapError('Location access denied. Showing default location.');
+                    return;
+                }
+                setMapError('Unable to retrieve your location right now.');
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000,
+            }
+        );
+    };
+
+    useEffect(() => {
+        requestCurrentLocation();
     }, []);
 
     const ageValues = dashboardRows
@@ -222,6 +273,39 @@ function DashboardPage() {
                             />
                         </Box>
                     </div>
+                </div>
+            </section>
+
+            <section className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8" style={{ border: `2px solid ${pinkTheme.sectionBorder}`, backgroundColor: pinkTheme.sectionBg }}>
+                <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">Location Map</p>
+                        <h2 className="mt-2 text-2xl font-semibold text-zinc-900">Where you are</h2>
+                    </div>
+                    <Button variant="outlined" onClick={requestCurrentLocation} disabled={locating}>
+                        {locating ? 'Locating...' : 'Use Current Location'}
+                    </Button>
+                </div>
+
+                {mapError && <Alert severity="warning" sx={{ mb: 2 }}>{mapError}</Alert>}
+
+                <div className="rounded-3xl p-3 sm:p-4" style={{ border: `2px solid ${pinkTheme.cardBorder}`, backgroundColor: pinkTheme.cardBg }}>
+                    <div className="mb-3 flex flex-wrap items-center gap-2 text-sm text-zinc-600">
+                        <span>Latitude: {mapCenter.lat.toFixed(6)}</span>
+                        <span>Longitude: {mapCenter.lng.toFixed(6)}</span>
+                    </div>
+                    <Box sx={{ width: '100%', height: 380, borderRadius: 2, overflow: 'hidden' }}>
+                        <iframe
+                            key={`${mapCenter.lat}-${mapCenter.lng}`}
+                            title="Current location map"
+                            src={buildMapEmbedUrl(mapCenter.lat, mapCenter.lng)}
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0 }}
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                        />
+                    </Box>
                 </div>
             </section>
 

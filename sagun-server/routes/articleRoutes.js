@@ -1,11 +1,18 @@
 const express = require('express');
+const {
+  getArticles,
+  getArticleByName,
+  createArticle,
+  updateArticle,
+  deleteArticle,
+} = require('../controllers/articleController');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.json([
-    { id: 1, title: 'Sample Article', slug: 'sample-article' },
-  ]);
-});
+router.get('/', getArticles);
+router.get('/slug/:name', getArticleByName);
+router.post('/', createArticle);
+router.put('/:id', updateArticle);
+router.delete('/:id', deleteArticle);
 
 module.exports = router;

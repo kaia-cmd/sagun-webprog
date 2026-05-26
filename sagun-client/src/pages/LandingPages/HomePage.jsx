@@ -1,12 +1,28 @@
+import { useEffect, useState } from 'react';
 import Button from '../../components/Button.jsx';
 import logo from '../../assets/K.png';
 import hero from '../../assets/hero.gif';
 
 import ArticleList from "../../components/ArticleList.jsx";
-import articles from "../../data/article-content.js";
+import { fetchArticles } from '../../services/ArticleService.js';
 
 
 const HomePage = () => {
+    const [articles, setArticles] = useState([]);
+
+    useEffect(() => {
+        const loadArticles = async () => {
+            try {
+                const response = await fetchArticles();
+                setArticles(response.data?.articles || []);
+            } catch (error) {
+                console.error('Failed to load home articles:', error);
+            }
+        };
+
+        loadArticles();
+    }, []);
+
     return (
         <div className='flex w-full flex-col gap-6'>
             <section className='border-y-2 border-pink-200 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8'>

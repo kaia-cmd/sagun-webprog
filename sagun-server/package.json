@@ -19,6 +19,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "create-admin": "node scripts/createAdmin.js",
+    "seed-articles": "node scripts/seedArticles.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

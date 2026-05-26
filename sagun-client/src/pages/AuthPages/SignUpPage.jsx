@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import { useState } from 'react';
-import { createUser } from "../../../services/UserService";
+import { createUser } from "../../services/UserService";
 
 const inputClasses = 'mt-2  w-full rounded-xl border border-zinc-300 bg-zinc-100 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:bg-zinc-50';
 

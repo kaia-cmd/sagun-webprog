@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import { useState } from 'react';
-import { loginUser } from '../../../services/UserService';
+import { loginUser } from '../../services/UserService';
 
 // helper to store auth
 const saveAuth = (token, type, firstName) => {
